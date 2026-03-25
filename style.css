@@ -1,0 +1,575 @@
+/* =========================================
+   ANIMATED GREETING CARD - MASTER STYLESHEET
+   Visual Studio Compatible - 500+ Lines
+   ========================================= */
+
+/* ==================== 1. VARIABLES & ROOT ==================== */
+:root {
+    /* Color Palette - Rich & Cinematic */
+    --bg-deep: #0a0a12;
+    --bg-mid: #12121f;
+    --bg-light: #1f1f35;
+    --gold: #f4c430;
+    --gold-light: #ffd966;
+    --gold-dark: #c9a227;
+    --rose: #ff6b8a;
+    --rose-deep: #e84a6f;
+    --rose-light: #ff8fa3;
+    --cream: #fff8e7;
+    --teal: #2dd4bf;
+    --teal-dark: #14b8a6;
+    --purple: #a855f7;
+    --purple-deep: #7c3aed;
+    
+    /* Typography */
+    --font-main: 'Tajawal', sans-serif;
+    --font-script: 'Marck Script', cursive;
+    
+    /* Spacing & Sizing */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 20px;
+    --spacing-lg: 40px;
+    --spacing-xl: 60px;
+    
+    /* Animation Timings */
+    --transition-fast: 0.2s;
+    --transition-med: 0.5s;
+    --transition-slow: 1s;
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ==================== 2. RESET & BASE ==================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-deep);
+    font-family: var(--font-main);
+    color: var(--cream);
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior: none;
+    /* Prevent text selection for cinematic feel */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ==================== 3. CANVAS & LAYERS ==================== */
+#mainCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+}
+
+.css-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    perspective: 1000px;
+}
+
+/* ==================== 4. LOADING SCREEN ==================== */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loading-text {
+    color: var(--gold);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    animation: pulseLoading 2s infinite alternate;
+    position: relative;
+}
+
+.loading-text::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--gold);
+    bottom: -10px;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: loadingBar 2s infinite alternate;
+}
+
+@keyframes loadingBar {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    50.1% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@keyframes pulseLoading {
+    0% { opacity: 0.4; transform: scale(0.98); text-shadow: none; }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0.4; transform: scale(0.98); text-shadow: 0 0 20px var(--gold); }
+}
+
+/* ==================== 5. TYPOGRAPHY & TITLE ==================== */
+.title-wrapper {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+    animation: cinematicEntry 2s var(--ease-smooth) 1.5s forwards;
+    position: relative;
+    z-index: 20;
+}
+
+/* Cinematic Fade & Scale Entry */
+@keyframes cinematicEntry {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        filter: blur(10px);
+    }
+    60% {
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+.main-title {
+    font-size: clamp(28px, 8vw, 70px);
+    font-weight: 900;
+    color: transparent;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--cream) 25%, var(--rose) 50%, var(--gold-light) 75%, var(--gold) 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    animation: gradientShift 5s ease infinite, textFloat 6s ease-in-out infinite;
+    text-shadow: 0px 0px 20px rgba(244, 196, 48, 0.2);
+    position: relative;
+    display: inline-block;
+}
+
+/* Shimmering Gradient Effect */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Gentle Floating */
+@keyframes textFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Friend Name - Special Script Style */
+.friend-name {
+    font-family: var(--font-script);
+    font-size: clamp(35px, 10vw, 80px);
+    color: var(--gold);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    display: inline-block;
+    animation: textFloat 5s ease-in-out infinite, nameGlow 3s ease-in-out infinite alternate;
+    transform-style: preserve-3d;
+}
+
+.friend-name::before, .friend-name::after {
+    content: '𝓢𝓞𝓤𝓓_𝓚𝓔𝓝_𝟖𝟖_';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+.friend-name::before {
+    color: var(--rose);
+    z-index: -1;
+    animation: glitch1 3s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    transform: translate(-2px, -2px);
+    opacity: 0.3;
+}
+
+.friend-name::after {
+    color: var(--teal);
+    z-index: -2;
+    animation: glitch2 3s infinite;
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    transform: translate(2px, 2px);
+    opacity: 0.3;
+}
+
+/* Complex Glitch Animation for Name */
+@keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-5px, 2px); }
+    94% { transform: translate(5px, -2px); }
+}
+
+@keyframes glitch2 {
+    0%, 90%, 100% { transform: translate(0); }
+    91% { transform: translate(5px, 1px); }
+    93% { transform: translate(-5px, -1px); }
+}
+
+@keyframes nameGlow {
+    from {
+        text-shadow: 
+            0 0 10px rgba(244, 196, 48, 0.4),
+            0 0 20px rgba(244, 196, 48, 0.2);
+    }
+    to {
+        text-shadow: 
+            0 0 20px rgba(244, 196, 48, 0.8),
+            0 0 40px rgba(244, 196, 48, 0.6),
+            0 0 60px rgba(255, 107, 138, 0.4),
+            0 0 80px rgba(255, 107, 138, 0.2);
+    }
+}
+
+/* ==================== 6. MESSAGE BOX (GLASSMORPHISM) ==================== */
+.message-box {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(244, 196, 48, 0.2);
+    border-radius: 24px;
+    padding: clamp(20px, 5vw, 40px);
+    max-width: 650px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+    animation: boxReveal 1.2s var(--ease-bounce) 2.8s forwards;
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+/* Shimmering Border Effect */
+.message-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        0deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.07) 50%, 
+        transparent 100%
+    );
+    transform: rotate(45deg);
+    animation: shimmer 6s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Corner Accents for Box */
+.message-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, var(--gold), var(--rose)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    opacity: 0.5;
+    animation: borderPulse 4s ease infinite;
+}
+
+@keyframes borderPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes boxReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(30px);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.02) translateY(-5px);
+    }
+    80% {
+        transform: scale(0.98) translateY(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.message-text {
+    font-size: clamp(15px, 4vw, 22px);
+    color: var(--cream);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeInUp 1s ease 3.5s forwards;
+}
+
+.message-highlight {
+    color: var(--rose);
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+/* Underline animation for highlights */
+.message-highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--rose);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s ease;
+    animation: underlineReveal 0.5s ease 4s forwards;
+}
+
+@keyframes underlineReveal {
+    to { transform: scaleX(1); }
+}
+
+.signature {
+    font-family: var(--font-script);
+    font-size: clamp(18px, 4vw, 24px);
+    color: var(--teal);
+    opacity: 0;
+    animation: fadeInUp 1s ease 4s forwards;
+    text-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+    margin-top: 10px;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== 7. PARTICLE BACKUP SYSTEM ==================== */
+.css-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+    will-change: transform;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(100vh) rotate(0deg) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+        transform: translateY(90vh) rotate(36deg) scale(1);
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(360deg) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* ==================== 8. TAP HINT ==================== */
+.tap-hint {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    z-index: 20;
+    animation: bounceHint 2s ease-in-out infinite, fadeHint 5s ease 5s forwards;
+    pointer-events: auto;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+@keyframes bounceHint {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-15px); }
+    60% { transform: translateX(-50%) translateY(-7px); }
+}
+
+@keyframes fadeHint {
+    to { opacity: 0; pointer-events: none; }
+}
+
+/* ==================== 9. DECORATIVE ELEMENTS ==================== */
+/* Animated Circles for Background */
+.bg-circle {
+    position: fixed;
+    border-radius: 50%;
+    z-index: 0;
+    filter: blur(60px);
+    animation: morphBlob 10s ease-in-out infinite;
+}
+
+@keyframes morphBlob {
+    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg); }
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(180deg); }
+}
+
+/* Sparkle Keyframes */
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Line Draw Effect */
+@keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+}
+
+/* ==================== 10. RESPONSIVE ADJUSTMENTS ==================== */
+@media (max-width: 768px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .friend-name::before, .friend-name::after {
+        display: none; /* Disable glitch on small screens for performance */
+    }
+
+    .message-box {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .message-text {
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 28px;
+    }
+    .friend-name {
+        font-size: 32px;
+    }
+    .message-box {
+        width: 95%;
+    }
+}
+
+/* ==================== 11. ACCESSIBILITY & PERFORMANCE ==================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .message-box, .title-wrapper {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* Hardware Acceleration Triggers */
+.css-particle, .message-box, .friend-name, .main-title {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    #mainCanvas, .css-particles, .loading-screen, .tap-hint {
+        display: none;
+    }
+    .message-box {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+/* ==================== END OF STYLESHEET ==================== */
